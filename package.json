@@ -2,7 +2,7 @@
   "name": "sidekick-runner",
   "version": "1.0.0",
   "description": "Analyses source code for quality issues, using git to analyse only what's changed",
-  "main": "index.js",
+  "main": "sidekick-runner.js",
   "scripts": {
     "test": "mocha"
   },
@@ -21,5 +21,15 @@
   "bugs": {
     "url": "https://github.com/sidekickcode/sidekick-runner/issues"
   },
-  "homepage": "https://github.com/sidekickcode/sidekick-runner#readme"
+  "homepage": "https://github.com/sidekickcode/sidekick-runner#readme",
+  "dependencies": {
+    "async-q": "^0.3.1",
+    "bluebird": "^3.3.4",
+    "child-process-promise": "^1.1.0",
+    "concat-stream": "^1.5.1",
+    "debug": "^2.2.0",
+    "getenv": "^0.6.0",
+    "lodash": "^4.6.1",
+    "strip-json-comments": "^2.0.1"
+  }
 }
