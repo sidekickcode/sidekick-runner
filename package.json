@@ -1,0 +1,25 @@
+{
+  "name": "sidekick-runner",
+  "version": "1.0.0",
+  "description": "Analyses source code for quality issues, using git to analyse only what's changed",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sidekickcode/sidekick-runner.git"
+  },
+  "keywords": [
+    "lint",
+    "sidekick",
+    "quality",
+    "static-analysis"
+  ],
+  "author": "",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/sidekickcode/sidekick-runner/issues"
+  },
+  "homepage": "https://github.com/sidekickcode/sidekick-runner#readme"
+}
