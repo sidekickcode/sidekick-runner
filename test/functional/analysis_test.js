@@ -19,18 +19,14 @@ describe('running analyser directly', function() {
     fileAnalyserEndSpy = sinon.spy();
   }
 
-
   describe('successful run', function() {
     var analyserIds = [
-      "jshint",
-      "eslint",
-      "jscs",
-      "js-todos",
+      "sidekick-jshint",
     ];
 
-    before(function(done) {
+    before(function() {
       createSpies();
-      return startAnalysis({
+      var analysis = getAnalyser({
         path: "unused",
         commitRef: "unused",
         paths: [
@@ -42,17 +38,21 @@ describe('running analyser directly', function() {
           file: fsRepo,
           fileInWorkingCopy: fsRepo,
         },
-        analyserIds: analyserIds,
-      })
-      .then(function(analysis) {
-        analysis.on("end", endSpy);
-        analysis.on("start", startSpy);
-        analysis.on("fileAnalyserEnd", fileAnalyserEndSpy);
-
-        analysis.run();
-        
-        return analysis.result;
+        analysers: [
+          {
+            analyser: "jshint",
+            command: "node " + __dirname + "/../../node_modules/sidekick-jshint/jshint.js",
+            path: __dirname + "/../../node_modules/sidekick-jshint/",
+            configJSON: "{}",
+          }
+        ],
       });
+
+      analysis.on("end", endSpy);
+      analysis.on("start", startSpy);
+      analysis.on("fileAnalyserEnd", fileAnalyserEndSpy);
+
+      return analysis.run()
     });
 
     fulfilledBasicContract()
@@ -86,7 +86,9 @@ describe('running analyser directly', function() {
         .unique()
         .value();
 
-      assert.deepEqual(names.sort(), analyserIds.sort());
+      assert.deepEqual(names.sort(), analyserIds.map(function(id) {
+        return id.replace(/sidekick-/, "");
+      }).sort());
     })
 
     function getMetaFromMetaEvent(args) {
@@ -122,7 +124,7 @@ describe('running analyser directly', function() {
     });
   }
 
-  function startAnalysis(args) {
+  function getAnalyser(args) {
     var analyser = main.create(args);
 
     return analyser;

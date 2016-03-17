@@ -1,8 +1,7 @@
-/*
+/**
  * the whole process of analysing a commit - runs through each
  * file and each analyser, and passed each file to every
  * commit-wide analyser
- *
  *
  * ## CommitAnalysis(opts)
  *
@@ -30,8 +29,7 @@ var Agent = require("../lib/agent");
 
 var proxy = require("../lib/proxy_events");
 
-
-module.exports = CommitAnalysis;
+module.exports = exports = CommitAnalysis;
 
 function CommitAnalysis(opts) {
   args.dependencies(this, opts, "commitLevel", "fileLevel", "paths", "repo", "projectId", "ref", "path");

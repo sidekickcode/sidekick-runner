@@ -24,7 +24,7 @@ module.exports = exports = run;
 function run(opts) {
   args.present(opts, "analysers", "file", "emit");
   var file = opts.file;
-  var logPrefix = "sidekick-runner:file-analysis:" + file.path;
+  var logPrefix = "file:" + file.path;
   var log = debug.get(logPrefix);
   var path = opts.path;
   var emit = opts.emit;

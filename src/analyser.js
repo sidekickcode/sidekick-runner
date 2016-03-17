@@ -108,7 +108,7 @@ exports.start = function(analyser, opts) {
         case "ENOENT":
           log("failed to run analyser due to missing file", err.stack);
           return reject(new AnalysisFailed(ERRORS.MISSING_ANALYSER, {
-            path: analyser.bin,
+            path: analyser.command,
           }));
         }
         reject(err);
