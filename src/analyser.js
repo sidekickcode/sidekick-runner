@@ -1,13 +1,14 @@
+"use strict";
+
 var Promise = require("bluebird");
 var concatStream = require("concat-stream");
 var spawn = require("child_process").spawn;
 var _ = require("lodash");
 var jsonWithComments = _.compose(JSON.parse, require("strip-json-comments"));
-var fs = require("fs");
+var fs = Promise.promisifyAll(require("fs"));
 var path = require("path");
 
-// TODO this shouldn't be done here - maybe pass in interpreter paths
-var settings = require("../../common/settings");
+var interpreters = require("./interpreters");
 
 var ERRORS = exports.errors = {
   MISSING_ANALYSER: "missing-analyser",
@@ -19,7 +20,7 @@ var ERRORS = exports.errors = {
   TIMEOUT: "analyser did not produce output in time",
 };
 
-var log = require("../lib/debug").get("sidekick-runner:file-analyser");
+var log = require("../lib/debug").get("file-analyser");
 
 exports.MAX_TIME_SECONDS = 60;
 
@@ -188,15 +189,6 @@ exports.endOfInput = function(child) {
   child.stdin.end();
 };
 
-// TODO should be made error handling
-exports.load = function(analyserPath) {
-  var configPath = analyserPath + "/config.json";
-  var content = fs.readFileSync(configPath, { encoding: "utf8" });
-  var parsed = jsonWithComments(content);
-  parsed.path = analyserPath;
-  return prepareConfig(parsed);
-};
-
 exports._prepareConfig = prepareConfig;
 
 function prepareConfig(parsed) {
@@ -217,17 +209,10 @@ function stream2promise(stream) {
 }
 
 function scriptInvocation(config) {
-  var interpreter = getInterpreter(config.interpreter);
+  var interpreter = interpreters.get(config.interpreter);
   return interpreter + " " + path.join(config.path, config.script);
 }
 
-function getInterpreter(name) {
-  if(name === "node") {
-    return settings.bundledNodeExecutable();
-  }
-
-  throw new Error("Unrecognised interpreter '" + name + "'");
-}
 
 
 function event2resolve(emitter, event) {

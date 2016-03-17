@@ -20,46 +20,62 @@ exports.run = function(setup) {
 };
 
 exports.create = function(setup) {
-
   args.present(setup, "paths", "path", "commitRef", "analyserIds", "repo");
 
-  var log = debug.get("sidekick-runner:main");
-
-  var analysersPath = setup.analysersPath || ANALYSERS_PATH;
-
-  var failedAnalysers = [];
-
-  var analysers = _.transform(setup.analyserIds, function(all, name) {
-    try {
-      var loaded = analyser.load(analysersPath + name);
-      all.push(loaded);
-    } catch(e) {
-      failedAnalysers.push(new CannotLoadAnalyser(name, e));
-    }
-  }, []);
+  var log = debug.get("main");
 
   setup = _.defaults(setup || {}, {
     analyserConfig: {},
+    analysersPath: ANALYSERS_PATH,
   });
 
-  log("analysis starting with " + JSON.stringify(setup));
+  var successfulAndFailedAnalysers = loadAnalysers(setup); 
+  var configsLoaded = successfulAndFailedAnalysers.then(function(analysers) {
+    return loadAnalyserConfig(analysers[0], setup)
+  });
+
+  log("analysis starting");
 
   var repo = typeof setup.repo.file === "function" ? setup.repo : require("./repo/" + setup.repo);
 
-  var analysis = new CommitAnalysis({
-    paths: setup.paths,
-    path: setup.path,
-    projectId: setup.path,
-    ref: setup.commitRef,
-    repo: repo,
-    // TODO ignoring commit level for now
-    commitLevel: [],
-    fileLevel: analysers,
+
+  return Promise.join(configsLoaded, successfulAndFailedAnalysers, function(configs, analysers) {
+    var loadedAnalysers = analysers[0] || [];
+    var failedAnalysers = analysers[1] || [];
+
+    var analysis = new CommitAnalysis({
+      paths: setup.paths,
+      path: setup.path,
+      projectId: setup.path,
+      ref: setup.commitRef,
+      repo: repo,
+      // TODO ignoring commit level for now
+      commitLevel: [],
+      fileLevel: loadedAnalysers,
+    });
+    analysis.configLoaded = configsLoaded;
+
+    analysis.once("start", function() {
+      _.each(failedAnalysers, function(failed) {
+        analysis.emit("error", failed.reason());
+      });
+    });
+
+    return analysis;
   });
+};
 
-  log(JSON.stringify(setup, null, 4));
+function loadAnalysers(setup) {
+  return settleAll(_.map(setup.analyserIds, function(name) {
+      analyser.load(setup.analysersPath + name);
+    }))
+    .then(function(loaded) {
+      return _.partition(loaded, "isFulfilled"); 
+    })
+}
 
-  var configsLoaded = analysers.map(function(analyser) {
+function loadAnalyserConfig(analysers, setup) {
+  return analysers.map(function(analyser) {
 
     if(!analyser.configurable) {
       return Promise.resolve(true);
@@ -78,7 +94,7 @@ exports.create = function(setup) {
     // as it'll later be fed into analysers in JSON format)
     var config = setup.analyserConfig[analyser.analyser] || {};
 
-    return Promise.settle(pathsToContent)
+    return settleAll(pathsToContent)
     .then(function(p2c) {
       config.configFiles = _.transform(p2c, function(all, p) {
         if(p.isFulfilled()) {
@@ -86,33 +102,12 @@ exports.create = function(setup) {
           all[pair[0]] = pair[1];
         }
       }, {});
+      log("loaded content for " + analyser.analyser);
       var jsonConfig = JSON.stringify(config);
-      log(jsonConfig);
       analyser.configJSON = jsonConfig;
     });
   });
-
-  analysis.loadAndRun = function() {
-    analysis.result = Promise.all(configsLoaded)
-      .then(function() {
-
-        // FIXME yes, super ugly, waiting
-        // for ppl to have time to attach
-        // listeners. should really make analyser load async
-        setTimeout(function() {
-          _.each(failedAnalysers, function(err) {
-            analysis.emit("error", err);
-          });
-        }, 0);
-
-        return analysis.run();
-      });
-  };
-
-  analysis.configLoaded = configsLoaded;
-
-  return analysis;
-};
+}
 
 function CannotLoadAnalyser(name, err) {
   Error.captureStackTrace(this, this.constructor);
@@ -120,3 +115,7 @@ function CannotLoadAnalyser(name, err) {
   this.message = "cannot load " + name + ": " + err.message;
 }
 require('util').inherits(CannotLoadAnalyser, Error);
+
+function settleAll(xs) {
+  return Promise.all(_.invoke(xs, "reflect"));
+}

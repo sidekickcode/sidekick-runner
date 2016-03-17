@@ -4,10 +4,7 @@ var getenv = require('getenv');
 var fs = Promise.promisifyAll(require("fs"));
 var path = require("path");
 
-var log = require("chained-logger").create("[repo] ");
-
 var gitBin = "git";
-
 
 // not the commited version - useful for files maybe .gitignored (like .sidekickrc)
 // and not allowed to be above repo

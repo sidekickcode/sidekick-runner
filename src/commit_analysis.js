@@ -35,7 +35,7 @@ module.exports = CommitAnalysis;
 
 function CommitAnalysis(opts) {
   args.dependencies(this, opts, "commitLevel", "fileLevel", "paths", "repo", "projectId", "ref", "path");
-  this.log = debug.get("sidekick-runner:commit");
+  this.log = debug.get("commit");
 
   this._currentFile = null;
 }

@@ -11,7 +11,7 @@ module.exports = MutipleFileAnalyser;
 function MutipleFileAnalyser(opts) {
   throw new Error("needs to be updated");
   args.dependencies(this, opts, "analyser");
-  this.log = debug.get("sidekick-runner:multiple-file-analyser:" + this.analyser.analyser);
+  this.log = debug.get("multiple-file-analyser:" + this.analyser.analyser);
 }
 
 Agent.inherits(MutipleFileAnalyser);

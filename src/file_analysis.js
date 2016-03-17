@@ -9,6 +9,8 @@
  * fileAnalyserEnd(err || null, File, Analyser, AnalyserResult)
  * ```
  */
+"use strict";
+
 var _ = require("lodash");
 var args = require("../lib/args");
 var Promise = require("bluebird");
