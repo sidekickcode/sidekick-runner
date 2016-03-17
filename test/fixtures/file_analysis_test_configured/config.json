@@ -1,0 +1,14 @@
+{
+  "analyser": "file_analysis_test_configured",
+  "version": "0.0.1",
+  "scope": "blob",
+  "category": "object",
+  "configurable": true,
+  "configFiles": [
+    "file_analysis_config_fixture.json",
+    "/etc/passwd",
+    "../file_analysis_config_fixture_above_repo.json"
+  ],
+  "script": "file_analysis_test_configured.js",
+  "interpreter": "node"
+}

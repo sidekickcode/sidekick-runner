@@ -4,8 +4,8 @@
  * ## Events
  *
  * ```javascript
- * fileStart(File)
- * fileEnd(err || null, File)
+ * start(File)
+ * end(err || null, File)
  * fileAnalyserEnd(err || null, File, Analyser, AnalyserResult)
  * ```
  */

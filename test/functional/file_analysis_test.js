@@ -9,7 +9,7 @@ const _ = require("lodash");
 var analyserModule = require("../../src/analyser");
 var ORIGINAL_MAX_TIME = analyserModule.MAX_TIME_SECONDS;
 
-var fixturesPath = __dirname + "/fixtures/";
+var fixturesPath = __dirname + "/../fixtures/";
 var repoPath = fixturesPath;
 
 describe('file level analysis', function() {
@@ -27,7 +27,7 @@ describe('file level analysis', function() {
     analyserModule.MAX_TIME_SECONDS = ORIGINAL_MAX_TIME;
   });
 
-  before(function(done) {
+  before(function() {
 
     var paths = [
       "file_analysis_test_analysis_target.js",
@@ -43,30 +43,32 @@ describe('file level analysis', function() {
       "file_analysis_test_timeout",
       "file_analysis_test_configured",
       "missing_analyser",
-    ];
+    ].map(function(n) {
+      return {
+        analyser: n,
+        command: "node " + __dirname + "/../fixtures/" + n + "/" + n + ".js",
+        path: __dirname + "/../fixtures/" + n + "/",
+        configJSON: "{}",
+      };
+    });
 
-  
-    return main.create({
-      analysersPath: fixturesPath,
+    var analysis = main.create({
       paths: paths,
       path: repoPath,
       commitRef: "29eeb6b996ae13378a2ec75d2aa2db65fc39b839",
-      analyserIds: analysers,
+      analysers: analysers,
       repo: repo,
     })
-    .then(function() {
-      // snoop into all emitted events
-      analysis.emit = function(name) {
-        heard.push({
-          event: name,
-          data: [].slice.call(arguments, 1),
-        })
-      };
 
-      analysis.run();
+    // snoop into all emitted events (only way of subscribing to all)
+    analysis.emit = function(name) {
+      heard.push({
+        event: name,
+        data: [].slice.call(arguments, 1),
+      })
+    };
 
-      return analysis.result;
-    });
+    return analysis.run();
   });
 
   describe('file level events', function() {
@@ -150,6 +152,9 @@ describe('file level analysis', function() {
         return event.event === "error"
           && event.data[0].analyser === "missing_analyser";
       });
+
+      assert(event, "couldn't find error");
+
       error = event.data[0];
     })
 

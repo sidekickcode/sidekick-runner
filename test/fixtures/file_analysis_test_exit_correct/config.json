@@ -1,0 +1,10 @@
+{
+  "analyser": "file_analysis_test_exit_correct",
+  "version": "0.0.1",
+  "scope": "blob",
+  "category": "object",
+  "configurable": false,
+  "configFiles": [],
+  "script": "file_analysis_test_exit_correct.js",
+  "interpreter": "node"
+}

@@ -39,6 +39,7 @@ exports.start = function(analyser, opts) {
   opts = opts || {};
   opts.env = opts.env || {};
 
+  
   var command = analyser.command.split(" ");
   var child = spawn(_.first(command), _.rest(command), {
     env: _.defaults(opts.env, process.env),
