@@ -16,11 +16,10 @@ exports.create = function(setup) {
     analyserConfig: {},
   });
 
-  var repo = typeof setup.repo.file === "function" ? setup.repo : require("./repo/" + setup.repo);
+  var repo = typeof setup.repo === "string" ? new (require("./repo/" + setup.repo))(setup) : setup.repo;
 
   var analysis = new CommitAnalysis({
     paths: setup.paths,
-    path: setup.path,
     projectId: setup.path,
     ref: setup.commitRef,
     repo: repo,

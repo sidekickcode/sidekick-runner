@@ -1,7 +1,6 @@
 "use strict";
 
 const main = require("../../src/main");
-const repo = require("../../src/repo/local");
 const Promise = require("bluebird");
 const fs = Promise.promisifyAll(require("fs"));
 const _ = require("lodash");
@@ -57,7 +56,7 @@ describe('file level analysis', function() {
       path: repoPath,
       commitRef: "29eeb6b996ae13378a2ec75d2aa2db65fc39b839",
       analysers: analysers,
-      repo: repo,
+      repo: "local",
     })
 
     // snoop into all emitted events (only way of subscribing to all)
@@ -149,8 +148,8 @@ describe('file level analysis', function() {
     var error;
     before(function() {
       var event = _.find(heard, function(event) {
-        return event.event === "error"
-          && event.data[0].analyser === "missing_analyser";
+        return event.event === "fileAnalyserEnd"
+          && event.data[2].analyser === "missing_analyser";
       });
 
       assert(event, "couldn't find error");
@@ -163,7 +162,7 @@ describe('file level analysis', function() {
     })
 
     it('error has description', function() {
-      assert.match(error.message, /ENOENT/);
+      assert.match(error.message, /missing-analyser/);
     })
   })
 
@@ -205,6 +204,7 @@ describe('file level analysis', function() {
     var configPassedToAnalyser;
     before(function() {
       exit = findExit("file_analysis_test_configured");
+      
       // the fake analyser just puts the configPassedToAnalyser object
       // it receives from analyser-configPassedToAnalyser into a single meta
       // so we can see it

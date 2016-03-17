@@ -33,6 +33,7 @@
     "strip-json-comments": "^2.0.1"
   },
   "devDependencies": {
+    "@sidekick/analyser-common": "^1.0.0",
     "chai": "^3.5.0",
     "mocha": "^2.4.5",
     "pprint": "0.0.1",

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var input = require("../../../../app/analysers/analyser-input");
+var input = require("@sidekick/analyser-common");
 
 input(function(setup) {
   // put the setup object into a single meta

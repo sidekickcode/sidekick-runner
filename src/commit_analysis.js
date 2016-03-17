@@ -32,7 +32,7 @@ var proxy = require("../lib/proxy_events");
 module.exports = exports = CommitAnalysis;
 
 function CommitAnalysis(opts) {
-  args.dependencies(this, opts, "commitLevel", "fileLevel", "paths", "repo", "projectId", "ref", "path");
+  args.dependencies(this, opts, "commitLevel", "fileLevel", "paths", "repo", "projectId", "ref");
   this.log = debug.get("commit");
 
   this._currentFile = null;
@@ -121,7 +121,6 @@ _.extend(CommitAnalysis.prototype, {
         emit: function() {
           return analysisEvents.emit.apply(analysisEvents, arguments);
         },
-        path: this.path,
         file: file,
         analysers: this.fileLevel,
       });
