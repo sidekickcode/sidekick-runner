@@ -1,7 +1,7 @@
 "use strict";
 
 var _ = require("lodash");
-var repo = require("../src/repo/local");
+var repo = require("./local");
 
 describe("local repo", function() {
 

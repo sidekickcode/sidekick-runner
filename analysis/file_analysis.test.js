@@ -1,14 +1,14 @@
 "use strict";
 
-const main = require("../../src/main");
+const main = require("./analysis");
 const Promise = require("bluebird");
 const fs = Promise.promisifyAll(require("fs"));
 const _ = require("lodash");
 
-var analyserModule = require("../../src/analyser");
+var analyserModule = require("./analyser");
 var ORIGINAL_MAX_TIME = analyserModule.MAX_TIME_SECONDS;
 
-var fixturesPath = __dirname + "/../fixtures/";
+var fixturesPath = __dirname + "/../test/fixtures/";
 var repoPath = fixturesPath;
 
 describe('file level analysis', function() {

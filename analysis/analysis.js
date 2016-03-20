@@ -29,9 +29,9 @@ var Agent = require("../lib/agent");
 
 var proxy = require("../lib/proxy_events");
 
-module.exports = exports = CommitAnalysis;
+module.exports = exports = Analysis;
 
-function CommitAnalysis(opts) {
+function Analysis(opts) {
   args.dependencies(this, opts, "commitLevel", "fileLevel", "paths", "repo", "projectId", "ref");
   this.log = debug.get("commit");
 
@@ -39,9 +39,9 @@ function CommitAnalysis(opts) {
 }
 
 
-Agent.inherits(CommitAnalysis);
+Agent.inherits(Analysis);
 
-_.extend(CommitAnalysis.prototype, {
+_.extend(Analysis.prototype, {
 
   run: function() {
     this.emit("start", this);
@@ -142,7 +142,7 @@ _.extend(CommitAnalysis.prototype, {
   },
 
   toString: function() {
-    return "<CommitAnalysis>";
+    return "<Analysis>";
   },
 
 

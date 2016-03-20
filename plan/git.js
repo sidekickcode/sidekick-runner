@@ -61,10 +61,6 @@ function GitPlanner(vcsTarget) {
   }
 
   function getConfig() {
-    return RepoConfig.load(repoPath)
-      .catch(function(e) {
-        self.emit("error", e);
-        return Promise.reject(e);
-      });
+    return RepoConfig.load(repoPath);
   }
 }

@@ -1,0 +1,7 @@
+/**
+ *
+ */
+
+exports.configure = function() {
+  
+};

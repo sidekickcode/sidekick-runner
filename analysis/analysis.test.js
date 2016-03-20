@@ -1,6 +1,6 @@
 "use strict";
 
-var main = require("../../src/main");
+var main = require("./analysis");
 var Promise = require("bluebird");
 var fs = Promise.promisifyAll(require("fs"));
 var sinon = require("sinon");
@@ -32,7 +32,7 @@ describe('running analyser directly', function() {
         paths: [
           "simple.js",
         ].map(function(p) {
-          return __dirname  + "/../fixtures/" + p;
+          return __dirname  + "/../test/fixtures/" + p;
         }),
         repo: { 
           file: fsRepo,
