@@ -1,5 +1,9 @@
 "use strict";
 
-exports.planForTarget = function(target) {
-  
+const git = require("./git");
+
+exports.planForTarget = function(target, analysers, repo, setup) {
+  if(target.path) {
+  } else {
+  }
 }

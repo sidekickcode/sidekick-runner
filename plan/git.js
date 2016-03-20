@@ -3,7 +3,7 @@
  */
 "use strict";
 
-function GitPlanner(vcsTarget) {
+function GitPlanner(vcsTarget, repo, setup) {
 
   const repoPath = vcsTarget.path;
   const beforeSha = vcsTarget.beforeId;

@@ -11,10 +11,10 @@ var debug = require("../lib/debug");
 
 var planner = require("../plan");
 
-exports.create = function(target, analysers) {
+exports.create = function(setup) {
 
 
-  return planner.forTarget(target, analysers)
+  return planner.forTarget(target, analysers, repo, setup)
     .then(function(plan) {
       return new CommitAnalysis({
         plan: plan,
@@ -24,12 +24,12 @@ exports.create = function(target, analysers) {
     })
 
 
-  setup = _.defaults(setup || {}, {
-    analyserConfig: {},
-  });
 
-  var repo = typeof setup.repo === "string" ? new (require("./repo/" + setup.repo))(setup) : setup.repo;
 
 
   return analysis;
 };
+
+function instanceOrType(type, option, setup) {
+  return option === "string" ? new (require("./repo/" + option))(setup) : option;
+}
