@@ -14,7 +14,6 @@ const events = require("../../common/events");
 const EventEmitter = require("events").EventEmitter;
 const inherits = require("util").inherits;
 
-
 const analysis = require("../../analysis");
 
 const uuid = require("uuid");
@@ -81,10 +80,6 @@ function AnalysisSession(plan, repo) {
       return analyse(_.pluck(files, "path"));
     });
   }
-
-  function analyse(plan, repo) {
-  }
-
 
   function handleFileAnalysisResult(err, file, analyser, result) {
     if(err) {

@@ -13,7 +13,6 @@ var planner = require("../plan");
 
 exports.create = function(setup) {
 
-
   return planner.forTarget(target, analysers, repo, setup)
     .then(function(plan) {
       return new CommitAnalysis({
@@ -22,10 +21,6 @@ exports.create = function(setup) {
         fileLevel: setup.analysers,
       });
     })
-
-
-
-
 
   return analysis;
 };
