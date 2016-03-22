@@ -1,6 +1,6 @@
 "use strict";
 
-var main = require("./analysis");
+var main = require("../sidekick-runner");
 var Promise = require("bluebird");
 var fs = Promise.promisifyAll(require("fs"));
 var sinon = require("sinon");

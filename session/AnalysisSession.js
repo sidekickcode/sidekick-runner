@@ -10,17 +10,18 @@
 const git = require("@sidekick/git-helpers");
 const Promise = require("bluebird");
 const _ = require("lodash");
-const events = require("../../common/events");
 const EventEmitter = require("events").EventEmitter;
 const inherits = require("util").inherits;
 
-const analysis = require("../../analysis");
+const analysis = require("../analysis");
 
 const uuid = require("uuid");
 
 module.exports = exports = AnalysisSession;
 
 function AnalysisSession(plan, repo) {
+  throw new Error("TODO - continue rewrite to use plan/repo etc");
+
   const self = this;
 
   EventEmitter.call(self);
@@ -74,11 +75,7 @@ function AnalysisSession(plan, repo) {
   // private API
 
   function run() {
-    return getFilesForAnalysis()
-    .then(function(files) {
-      log.debug(`analysing ${files.length} files`);
-      return analyse(_.pluck(files, "path"));
-    });
+    return analyse(plan, _.pluck(files, "path"));
   }
 
   function handleFileAnalysisResult(err, file, analyser, result) {

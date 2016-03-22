@@ -4,7 +4,7 @@
   "description": "Analyses source code for quality issues, using git to analyse only what's changed",
   "main": "sidekick-runner.js",
   "scripts": {
-    "test": "find . -name '*\.test.js' | xargs mocha -r test/setup.js"
+    "test": "mocha analysis/*.test.js plan/*.test.js session/*.test.js repo/*.test.js lib/*.test.js"
   },
   "repository": {
     "type": "git",

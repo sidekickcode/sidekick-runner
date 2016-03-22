@@ -1,17 +1,13 @@
 /**
- * the whole process of analysing a commit - runs through each
+ * the whole process of analysing a plan - runs through each
  * file and each analyser, and passed each file to every
  * commit-wide analyser
  *
- * ## CommitAnalysis(opts)
+ * ## Analysis(opts)
  *
  * opts:
- * - paths [String] paths to analyse
- * - fileLevel [Analyser]
- * - commitLevel [Analyser]
  * - repo { file: path -> Promise(File) }
- * - projectId - Any - how do you identify a project for repo
- * - ref - Any - how does repo identify a commit
+ * - plan
  *
  */
 var util = require("util");
@@ -32,8 +28,8 @@ var proxy = require("../lib/proxy_events");
 module.exports = exports = Analysis;
 
 function Analysis(opts) {
-  args.dependencies(this, opts, "commitLevel", "fileLevel", "paths", "repo", "projectId", "ref");
-  this.log = debug.get("commit");
+  args.dependencies(this, opts, "repo", "plan");
+  this.log = debug.get("analysis");
 
   this._currentFile = null;
 }
@@ -49,25 +45,8 @@ _.extend(Analysis.prototype, {
     if(_.isEmpty(this.paths)) {
       return this._finish();
     }
-    this.log("starting with " + _.pluck(this.commitLevel.concat(this.fileLevel), "analyser").join(", "));
+    this.log("starting with " + _.pluck(this.fileLevel, "analyser").join(", "));
 
-    this.commitLevelAgents = _.map(this.commitLevel, function(analyser) {
-      var agent = new MultipleFileAnalyser({
-        analyser: analyser
-      });
-
-      proxy(this, agent, "meta");
-      proxy(this, agent, "error", "fileError");
-      return agent;
-    }, this);
-
-    var endPromises = _.map(this.commitLevelAgents, function(agent) {
-      return new Promise(function(resolve, reject) {
-        agent.once("end", resolve);
-      });
-    });
-
-    _.invoke(this.commitLevelAgents, "run");
 
     var self = this;
 
@@ -79,7 +58,6 @@ _.extend(Analysis.prototype, {
     }, 1);
 
     var complete = Promise.all(queue.push(this.paths))
-      .then(signalAndWaitForCommitScoped.bind(this));
 
     complete
       .finally(function() {
@@ -87,12 +65,6 @@ _.extend(Analysis.prototype, {
       }.bind(this));
 
     return complete;
-
-    function signalAndWaitForCommitScoped() {
-      _.invoke(this.commitLevelAgents, "endOfInput");
-      return Promise.all(endPromises);
-    }
-
   },
 
   stop: function() {
