@@ -1,30 +1,27 @@
+// @flow
+/*:: import type { RunnerConfig } from "./types" */
 // main interface to start the analysis process
 "use strict";
 
-var _ = require("lodash");
-var CommitAnalysis = require("./analysis/commit_analyser");
-var analyser = require("./analyser");
-var Promise = require("bluebird");
-var args = require("../lib/args");
+const _ = require("lodash");
+const Analysis = require("./analysis");
+const Promise = require("bluebird");
+const args = require("./lib/args");
 
-var debug = require("../lib/debug");
+const debug = require("./lib/debug");
 
-var planner = require("../plan");
+const planner = require("./plan");
+const repo = require("./repo");
 
-exports.create = function(setup) {
+exports.create = function(setup/*: RunnerConfig */) {
+  const repository = setup.repo || repo.forTarget(setup.target, setup);
 
-  return planner.forTarget(target, analysers, repo, setup)
+  return planner.forTarget(setup.target, setup.analysers, repo, setup)
     .then(function(plan) {
-      return new CommitAnalysis({
+      return new Analysis({
         plan: plan,
-        repo: repo,
+        repo: repository,
         fileLevel: setup.analysers,
       });
     })
-
-  return analysis;
 };
-
-function instanceOrType(type, option, setup) {
-  return option === "string" ? new (require("./repo/" + option))(setup) : option;
-}

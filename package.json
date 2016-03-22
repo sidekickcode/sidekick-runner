@@ -28,6 +28,7 @@
     "child-process-promise": "^1.1.0",
     "concat-stream": "^1.5.1",
     "debug": "^2.2.0",
+    "flow-bin": "^0.22.1",
     "getenv": "^0.6.0",
     "lodash": "^3.10.1",
     "strip-json-comments": "^2.0.1"
