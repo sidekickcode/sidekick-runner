@@ -1,9 +1,11 @@
 "use strict";
 
-const main = require("./analysis");
+const Analysis = require("./analysis");
 const Promise = require("bluebird");
 const fs = Promise.promisifyAll(require("fs"));
 const _ = require("lodash");
+const Local = require("../repo/local");
+const plan = require("../plan");
 
 var analyserModule = require("./analyser");
 var ORIGINAL_MAX_TIME = analyserModule.MAX_TIME_SECONDS;
@@ -45,18 +47,20 @@ describe('file level analysis', function() {
     ].map(function(n) {
       return {
         analyser: n,
-        command: "node " + __dirname + "/../fixtures/" + n + "/" + n + ".js",
-        path: __dirname + "/../fixtures/" + n + "/",
+        command: "node " + __dirname + "/../test/fixtures/" + n + "/" + n + ".js",
+        path: __dirname + "/../test/fixtures/" + n + "/",
         configJSON: "{}",
       };
     });
 
-    var analysis = main.create({
-      paths: paths,
-      path: repoPath,
-      commitRef: "29eeb6b996ae13378a2ec75d2aa2db65fc39b839",
-      analysers: analysers,
-      repo: "local",
+    var analysis = new Analysis({
+      repo: new Local(repoPath),
+      plan: plan.createFromRaw({
+        byAnalysers: [{
+          paths: paths,
+          analysers: analysers,
+        }],
+      }),
     })
 
     // snoop into all emitted events (only way of subscribing to all)

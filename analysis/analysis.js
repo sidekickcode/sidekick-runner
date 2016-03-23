@@ -1,3 +1,4 @@
+// @flow
 /**
  * the whole process of analysing a plan - runs through each
  * file and each analyser, and passed each file to every
@@ -10,25 +11,29 @@
  * - plan
  *
  */
-var util = require("util");
-var _ = require("lodash");
-var asyncQ = require("async-q");
-var args = require("../lib/args");
-var Promise = require("bluebird");
-var EventEmitter = require("events").EventEmitter;
+const util = require("util");
+const _ = require("lodash");
+const asyncQ = require("async-q");
+const args = require("../lib/args");
+const Promise = require("bluebird");
+const EventEmitter = require("events").EventEmitter;
 
-var debug = require("../lib/debug");
+const debug = require("../lib/debug");
 
-var MultipleFileAnalyser = require("./multiple_file_analyser");
-var analyseFile = require("./file_analysis");
-var Agent = require("../lib/agent");
+const analyseFile = require("./file_analysis");
+const Agent = require("../lib/agent");
 
-var proxy = require("../lib/proxy_events");
+const proxy = require("../lib/proxy_events");
+
+/*:: import type { AnalysisSetup, Repo, Plan } from "../types" */
 
 module.exports = exports = Analysis;
 
-function Analysis(opts) {
-  args.dependencies(this, opts, "repo", "plan");
+
+function Analysis(opts/*: AnalysisSetup */) {
+  this.repo = opts.repo;
+  this.plan = opts.plan;
+
   this.log = debug.get("analysis");
 
   this._currentFile = null;
@@ -42,22 +47,18 @@ _.extend(Analysis.prototype, {
   run: function() {
     this.emit("start", this);
 
-    if(_.isEmpty(this.paths)) {
-      return this._finish();
-    }
-    this.log("starting with " + _.pluck(this.fileLevel, "analyser").join(", "));
+    const list = this.plan.perFileTasks();
 
-
-    var self = this;
+    this.log("starting analysis of %s tasks", list.length);
 
     // analyse one file at a time
-    var queue = asyncQ.queue(function(path) {
+    const queue = asyncQ.queue(function(path) {
       // important we look up function as we process queue, as we
       // disable the queue processing on stop
-      return self._analyseFile(path);
-    }, 1);
+      return this._analyseFile(path);
+    }.bind(this), 1);
 
-    var complete = Promise.all(queue.push(this.paths))
+    const complete = Promise.all(queue.push(list))
 
     complete
       .finally(function() {
@@ -77,24 +78,24 @@ _.extend(Analysis.prototype, {
     this.log("stopped");
   },
 
-  _analyseFile: function(path) {
-    this.emit("fileStart", path, this);
+  _analyseFile: function(task) {
+    this.emit("fileStart", task.path, this);
 
-    return this.repo.file(this.projectId, this.ref, path)
+    return this.repo.file(task.path)
       .then(start.bind(this), function(err) {
-        this.log("can't load file " + path + ": " + err);
+        this.log("can't load file " + task.path + ": " + err);
       }.bind(this));
 
     function start(file) {
 
-      var analysisEvents = new EventEmitter;
+      const analysisEvents = new EventEmitter;
 
       this._currentFile = analyseFile({
         emit: function() {
           return analysisEvents.emit.apply(analysisEvents, arguments);
         },
         file: file,
-        analysers: this.fileLevel,
+        analysers: task.analysers,
       });
 
       this._currentFile
@@ -102,8 +103,6 @@ _.extend(Analysis.prototype, {
         .finally(function() {
           analysisEvents.removeAllListeners();
         });
-
-      // TODO we should pass to commit level analyser once reinstated
 
       proxy(this, analysisEvents, "fileEnd");
       proxy(this, analysisEvents, "fileAnalyserEnd");

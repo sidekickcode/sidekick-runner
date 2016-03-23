@@ -1,7 +1,0 @@
--r test/setup.js
---ui bdd
---reporter spec
-analysis/*.test.js
-plan/*.test.js
-session/*.test.js
-repo/*.test.js

@@ -1,9 +1,10 @@
 "use strict";
 
-var main = require("../sidekick-runner");
+var Analysis = require("./analysis");
 var Promise = require("bluebird");
 var fs = Promise.promisifyAll(require("fs"));
 var sinon = require("sinon");
+var plan = require("../plan");
 
 var _ = require("lodash");
 
@@ -26,26 +27,29 @@ describe('running analyser directly', function() {
 
     before(function() {
       createSpies();
-      var analysis = getAnalyser({
-        path: "unused",
-        commitRef: "unused",
-        paths: [
-          "simple.js",
-        ].map(function(p) {
-          return __dirname  + "/../test/fixtures/" + p;
-        }),
+      var analysis = new Analysis({
         repo: { 
           file: fsRepo,
-          fileInWorkingCopy: fsRepo,
         },
-        analysers: [
-          {
-            analyser: "jshint",
-            command: "node " + __dirname + "/../../node_modules/sidekick-jshint/jshint.js",
-            path: __dirname + "/../../node_modules/sidekick-jshint/",
-            configJSON: "{}",
-          }
-        ],
+        plan: plan.createFromRaw({
+          byAnalysers: [
+            {
+              paths: [
+                "simple.js",
+              ].map(function(p) {
+                return __dirname  + "/../test/fixtures/" + p;
+              }),
+              analysers: [
+                {
+                  analyser: "jshint",
+                  command: "node " + __dirname + "/../../node_modules/sidekick-jshint/jshint.js",
+                  path: __dirname + "/../../node_modules/sidekick-jshint/",
+                  configJSON: "{}",
+                },
+              ],
+            }
+          ],
+        }),
       });
 
       analysis.on("end", endSpy);
@@ -124,9 +128,4 @@ describe('running analyser directly', function() {
     });
   }
 
-  function getAnalyser(args) {
-    var analyser = main.create(args);
-
-    return analyser;
-  }
 })

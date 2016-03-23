@@ -1,51 +1,55 @@
+// @flow
 /**
  * creates an AnalysisPlan based on a git repo
  */
 "use strict";
 
-function GitPlanner(vcsTarget, repo, setup) {
+const git = require("@sidekick/git-helpers");
+const _ = require("lodash");
+const log = require("debug")("git-plan");
+const repoConfig = require("@sidekick/common/repoConfig");
+const Promise = require("bluebird");
 
+/*:: import type { PlanSource, Plan } from "../types" */
+
+exports.plan = function plan(opts/*:  PlanSource */) /*: Promise<Plan> */ {
+
+  const vcsTarget = opts.target;
   const repoPath = vcsTarget.path;
-  const beforeSha = vcsTarget.beforeId;
-  const afterSha = vcsTarget.afterId;
+  const beforeSha = vcsTarget.versus;
+  const afterSha = vcsTarget.compare;
 
-  this.plan = function() {
-    return Promise.join(getConfig(), getPaths(), repoPath)
-  };
+  const repoConfig = opts.repoConfig;
 
-  function getPaths() {
-    return getFilesForAnalysis().then(partitionNonAnalysedFiles);
-  }
+  return getFilesForAnalysis()
+    .then(createPlan)
 
-  function createPlan(repoConfigAtCommit, paths, repo) {
-    return _.map(repoConfigAtCommit.languages(), function(languageId) {
-      var toAnalyse = repoConfigAtCommit.includedPaths(paths, languageId);
-      return {
+  function createPlan(files) {
+    log("create plan");
+
+    const allPaths = _.pluck(files, "path");
+    const isAnalysed = {};
+
+    const tasks = [];
+
+    _.each(repoConfig.analysersByLanguages(), function(analysers, language) {
+      var toAnalyse = repoConfig.includedPaths(allPaths, language);
+
+      _.each(toAnalyse, (path) => isAnalysed[path] = true)
+
+      tasks.push({
         paths: toAnalyse,
-        analysers: repoConfigAtCommit.analysers(languageId),
-        repo: repo,
-      };
-    }, []);
-  }
-
-  function partitionNonAnalysedFiles(files) {
-    log("partitionNonAnalysedFiles");
-    return getConfig()
-    .then(function(repoConfigAtCommit) {
-      log(JSON.stringify([files, repoConfigAtCommit]));
-      var allPaths = _.pluck(files, "path");
-
-      var allAnalysedPaths = _.transform(repoConfigAtCommit.languages(), function(all, language) {
-        var toAnalyse = repoConfigAtCommit.includedPaths(allPaths, language);
-        _.each(toAnalyse, function(path) {
-          all[path] = true;
-        });
-      });
-
-      return _.groupBy(files, function(file) {
-        return allAnalysedPaths[file.path] ? "analysed" : "notAnalysed";
+        analysers: analysers,
       });
     });
+
+
+    const unanalysed = _.reject(files, _.propertyOf(isAnalysed));
+
+    return {
+      notAnalysed: unanalysed,
+      byAnalysers: tasks,
+    };
   }
 
   function getFilesForAnalysis() {
@@ -58,9 +62,5 @@ function GitPlanner(vcsTarget, repo, setup) {
 
   function isFullScanAnalysis() {
     return !beforeSha;
-  }
-
-  function getConfig() {
-    return RepoConfig.load(repoPath);
   }
 }

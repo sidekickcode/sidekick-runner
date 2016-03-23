@@ -1,3 +1,4 @@
+// @flow
 /**
  * handles process of analysing , interactive
  * in that we can change files and reanalyse
@@ -13,21 +14,22 @@ const _ = require("lodash");
 const EventEmitter = require("events").EventEmitter;
 const inherits = require("util").inherits;
 
-const analysis = require("../analysis");
+const Analysis = require("../analysis");
 
 const uuid = require("uuid");
 
+const log = require("../lib/debug").get("analysis-session");
+
+/*:: import type { AnalysisSessionSetup, AnalysisState } from "../types" */
+
 module.exports = exports = AnalysisSession;
 
-function AnalysisSession(plan, repo) {
-  throw new Error("TODO - continue rewrite to use plan/repo etc");
-
+function AnalysisSession(opts /*: AnalysisSessionSetup */) {
   const self = this;
 
   EventEmitter.call(self);
 
-  // @type {[path: string]: {[analyserId: string]: Array<meta> | Error }}
-  const analysisByPathAndAnalyser = {};
+  const analysisByPathAndAnalyser /*: AnalysisState */ = {};
 
   // mutable stuff
   var expired = false;
@@ -39,14 +41,13 @@ function AnalysisSession(plan, repo) {
   };
 
   self.start = function() {
-    log("start " + JSON.stringify(self.definition));
+    log("start");
 
-    var initialAnalysis = run()
-      .catch(function(err) {
-        log.error("error" + err);
-      })
+    var initialAnalysis = createAnalysis()
 
     self.emit("started");
+
+    process.nextTick(() => initialAnalysis.run())
 
     return initialAnalysis;
   }
@@ -74,8 +75,8 @@ function AnalysisSession(plan, repo) {
 
   // private API
 
-  function run() {
-    return analyse(plan, _.pluck(files, "path"));
+  function createAnalysis() {
+    return new Analysis(opts.analysisSetup); 
   }
 
   function handleFileAnalysisResult(err, file, analyser, result) {

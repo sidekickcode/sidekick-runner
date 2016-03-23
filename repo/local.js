@@ -12,16 +12,18 @@ var path = require("path");
 
 module.exports = exports = Local;
 
-function Local() {
+function Local(repoPath /*: string */) {
+  const normalizedPath = path.normalize(repoPath);
+
   // not the commited version - useful for files maybe .gitignored (like .sidekickrc)
   // and not allowed to be above repo
-  this.fileInWorkingCopy = Promise.method(function(repoPath, ref, filePath) {
-    repoPath = path.normalize(repoPath);
+  this.fileInWorkingCopy = Promise.method(function(filePath) {
     // convert to absolute
-    var targetPath = path.normalize(path.join(repoPath, filePath));
+    const targetPath = path.normalize(path.join(normalizedPath, filePath));
+    
 
     // only way this can happen is via ..'ing
-    if(targetPath.indexOf(repoPath) !== 0) {
+    if(targetPath.indexOf(normalizedPath) !== 0) {
       throw new Error("cannot-load-file-above-repo");
     }
 
