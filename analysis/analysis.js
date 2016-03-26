@@ -84,6 +84,8 @@ _.extend(Analysis.prototype, {
     return this.repo.file(task.path)
       .then(start.bind(this), function(err) {
         this.log("can't load file " + task.path + ": " + err);
+        // don't reject here, as it kills the queue
+        this.emit("error", Error("can't analyse file: " + err.message));
       }.bind(this));
 
     function start(file) {

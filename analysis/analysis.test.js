@@ -42,8 +42,8 @@ describe('running analyser directly', function() {
               analysers: [
                 {
                   analyser: "jshint",
-                  command: "node " + __dirname + "/../../node_modules/sidekick-jshint/jshint.js",
-                  path: __dirname + "/../../node_modules/sidekick-jshint/",
+                  command: "node " + __dirname + "/../node_modules/sidekick-jshint/jshint.js",
+                  path: __dirname + "/../node_modules/sidekick-jshint/",
                   configJSON: "{}",
                 },
               ],
@@ -55,6 +55,9 @@ describe('running analyser directly', function() {
       analysis.on("end", endSpy);
       analysis.on("start", startSpy);
       analysis.on("fileAnalyserEnd", fileAnalyserEndSpy);
+      analysis.on("error", function(err) {
+        console.error(err); 
+      })
 
       return analysis.run()
     });
@@ -118,7 +121,7 @@ describe('running analyser directly', function() {
     
   }
 
-  function fsRepo(_repoPath, _ref, path) {
+  function fsRepo(path) {
     return fs.readFileAsync(path, { encoding: "utf8" })
     .then(function(content) {
       return {

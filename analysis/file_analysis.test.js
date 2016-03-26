@@ -42,7 +42,6 @@ describe('file level analysis', function() {
       "file_analysis_test_exit_non_json_analyser",
       "file_analysis_test_exit_signal",
       "file_analysis_test_timeout",
-      "file_analysis_test_configured",
       "missing_analyser",
     ].map(function(n) {
       return {
@@ -202,51 +201,7 @@ describe('file level analysis', function() {
 
   })
 
-  describe('configuration', function() {
 
-    var exit;
-    var configPassedToAnalyser;
-    before(function() {
-      exit = findExit("file_analysis_test_configured");
-      
-      // the fake analyser just puts the configPassedToAnalyser object
-      // it receives from analyser-configPassedToAnalyser into a single meta
-      // so we can see it
-      configPassedToAnalyser = getOutput(exit).meta[0].config;
-      assert(configPassedToAnalyser, "stub analyser didn't work");
-    })
-
-
-    it('has exit event', function() {
-      assert.isDefined(exit);
-    })
-
-    it('exit with no error', function() {
-      assertNoError(exit);
-    })
-
-    it('is passed file content', function() {
-      assert.match(configPassedToAnalyser.content, /x \+ 1/)
-    })
-
-    it('is not passed config files above the repo', function() {
-      assert.notProperty(configPassedToAnalyser.configFiles, '../file_analysis_config_fixture_above_repo.json');
-    })
-
-    it('is passed config files requested as strings', function() {
-      assert.match(configPassedToAnalyser.configFiles['file_analysis_config_fixture.json'], /"readOk": true/);
-    })
-
-    it('is not passed absolute config paths', function() {
-      assert.notProperty(configPassedToAnalyser.configFiles, '/etc/passwd');
-    })
-
-    it('is only passed expected config', function() {
-      // whitelist for paranoia :)
-      assert.deepEqual(_.keys(configPassedToAnalyser.configFiles), ['file_analysis_config_fixture.json']);
-    })
-
-  })
 
 
   function findExit(analyser) {
