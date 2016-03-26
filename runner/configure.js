@@ -38,7 +38,7 @@ function ensureAnalysers(opts/*: { analysers: Array<Analyser>, repo: Repo, shoul
 
             // TODO this is really hack
             configured.command = configured.command ||
-              (configured.interpreter + " " + configured.path + "/package/" + configured.script);
+                (path.join(configured.interpreter + " ", configured.path, "/",configured.script));
 
             configured.configJSON = JSON.stringify(configByFile); 
 
