@@ -23,7 +23,7 @@ const debug = require("../lib/debug");
 const analyseFile = require("./file_analysis");
 const Agent = require("../lib/agent");
 
-const proxy = require("../lib/proxy_events");
+const proxy = require("proxytron");
 
 /*:: import type { AnalysisSetup, Repo, Plan } from "../types" */
 
@@ -106,8 +106,14 @@ _.extend(Analysis.prototype, {
           analysisEvents.removeAllListeners();
         });
 
-      proxy(this, analysisEvents, "fileEnd");
-      proxy(this, analysisEvents, "fileAnalyserEnd");
+      proxy({
+        from: analysisEvents,
+        to: this,
+        events: {
+          "fileEnd": null,
+          "fileAnalyserEnd": null,
+        },
+      });
 
       return this._currentFile.promise;
     }

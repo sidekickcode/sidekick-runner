@@ -16,8 +16,7 @@ const log = require("./lib/debug").get("runner");
 const configure = require("./runner/configure");
 
 const repoConfig = require("@sidekick/common/repoConfig");
-const eventHelpers = require("@sidekick/common/eventHelpers");
-const proxy = eventHelpers.proxy;
+const proxy = require("proxytron");
 
 /*:: import type { RunnerConfig, AnalysisSetup } from "./types" */
 
@@ -92,12 +91,18 @@ function createAnalysers(state, events) {
     shouldInstall: state.shouldInstall,
     // install into a subdir of this module's location
     analyserSource: path.join(__dirname, '/installed-analysers'),
-  }, events);
+  });
 
-  proxy(ensuring, events, "downloading");
-  proxy(ensuring, events, "downloaded");
-  proxy(ensuring, events, "installing");
-  proxy(ensuring, events, "installed");
+  proxy({
+    from: ensuring,
+    to: events,
+    events: {
+      downloading: null,
+      downloaded: null,
+      installing: null,
+      installed: null,
+    }
+  });
 
   return ensuring.promise;
 }
