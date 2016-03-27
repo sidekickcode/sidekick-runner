@@ -32,12 +32,15 @@ exports.session = function(setup/*: RunnerConfig */) /*: Promise<AnalysisSession
 
 exports.create = function(setup/*: RunnerConfig */) /*: Promise<Analysis> */ {
   return createAnalysisSetup(setup)
-    .then((analysisSetup) => new Analysis(analysisSetup))
+    .promise
+    .then((analysisSetup) => {
+      new Analysis(analysisSetup)
+    })
 }
 
 function createAnalysisSetup(setup/*: RunnerConfig */) /*: Promise<AnalysisSetup> */ {
 
-  const events = new EventEmitter;
+  const events = setup.events || new EventEmitter;
 
   // state is mutated as we find out more about the situation,
   // it's only assigned to inside this scope

@@ -3,7 +3,8 @@
 // all information required to start a run
 export type RunnerConfig = {
   target: Target,
-  repo?: Repo 
+  repo?: Repo,
+  events?: EventEmitter,
 };
 
 /**
