@@ -45,7 +45,7 @@ function AnalysisSession(opts /*: AnalysisSessionSetup */) {
 
     var initialAnalysis = createAnalysis()
 
-    self.emit("started");
+    self.emit("started", initialAnalysis);
 
     process.nextTick(() => initialAnalysis.run())
 

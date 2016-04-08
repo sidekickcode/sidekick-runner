@@ -9,9 +9,7 @@ const SAM = require('@sidekick/analyser-manager');
 
 const debug = require("../lib/debug").get("configure");
 
-
 exports.ensureAnalysers = ensureAnalysers;
-
 
 function ensureAnalysers(opts/*: { analysers: Array<Analyser>, repo: Repo, shouldInstall: Boolean } */) /*: Promise<Array<RunnableAnalyser>> */ {
   
@@ -21,14 +19,18 @@ function ensureAnalysers(opts/*: { analysers: Array<Analyser>, repo: Repo, shoul
 
   manager.promise = manager.init()
     .then(() => {
-      return Promise.all(_.map(opts.analysers, installAndLoadConfigForAnalyser));
-    })
+      return manager.validateAnalyserList(opts.analysers)
+        .then(function(validAnalysers){
+          debug('valid analysers: ' + JSON.stringify(validAnalysers));
+          return Promise.all(_.map(validAnalysers, installAndLoadConfigForAnalyser));
+        });
+    });
 
   return manager;
 
   function installAndLoadConfigForAnalyser(analyser) {
     const installed = analyser.local ? {}
-                                     : manager.installAnalyser(analyser.name, analyser.version)
+                                     : manager.installAnalyser(analyser.name, analyser.version);
 
     return Promise.resolve(installed)
       .then((found/*: { path: string, config: object } */) => {
