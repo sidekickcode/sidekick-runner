@@ -64,7 +64,7 @@ exports.start = function(analyser, opts) {
 
   function writeInitialInput() {
     var perFileConfig = JSON.stringify({ path: opts.path, filePath: opts.filePath });
-    child.stdin.write(analyser.configJSON || "{}");
+    child.stdin.write("{\"configFiles\": " + analyser.configJSON + "}" || "{}");
     child.stdin.write("\n");
     child.stdin.write(perFileConfig);
     child.stdin.write("\n");

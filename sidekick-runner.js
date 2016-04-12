@@ -52,7 +52,7 @@ function createAnalysisSetup(setup/*: RunnerConfig */) /*: Promise<AnalysisSetup
     .then(assign(createPlan, "plan"))
     .then(function() {
       // make a runnable plan with fully configured analysers
-      state.plan = planner.withAnalyserConfig(state.plan, state.analysers); 
+      state.plan = planner.withAnalyserConfig(state.plan, state.analysers);
     })
     .catch(explainFailure(`failed to start analysis, planning failed because: `))
     .then(function() {

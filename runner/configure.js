@@ -14,15 +14,13 @@ exports.ensureAnalysers = ensureAnalysers;
 function ensureAnalysers(opts/*: { analysers: Array<Analyser>, repo: Repo, shouldInstall: Boolean } */) /*: Promise<Array<RunnableAnalyser>> */ {
   
   const manager = new SAM(opts.analyserSource);
-
-  const configByAnalyser = getConfig();
-
+  
   manager.promise = manager.init()
     .then(() => {
       return manager.validateAnalyserList(opts.analysers)
         .then(function(validAnalysers){
           debug('valid analysers: ' + JSON.stringify(validAnalysers));
-          return Promise.all(_.map(validAnalysers, installAndLoadConfigForAnalyser));
+          return Promise.all(_.map(validAnalysers, installAndLoadConfigForAnalyser))
         });
     });
 
@@ -37,37 +35,19 @@ function ensureAnalysers(opts/*: { analysers: Array<Analyser>, repo: Repo, shoul
         return _.defaults({ path: found.path }, analyser, found.config) 
       })
       .then(function(configured) {
-        return configByAnalyser
-          .then(_.property(analyser.name))
+        return loadConfig(opts.repo, configured)
           .then(function(configByFile) {
 
             // TODO this is really hack
             configured.command = configured.command ||
                 (path.join(configured.interpreter + " ", configured.path, "/",configured.script));
 
-            configured.configJSON = JSON.stringify(configByFile); 
-
+            configured.configJSON = JSON.stringify(configByFile);
             return configured;
           });
       })
   }
-
-   function getConfig() {
-     const configs = opts.analysers.map((analyser) => {
-      return loadConfig(opts.repo, analyser)
-        .then((config) => {
-          debug("loaded user config for " + analyser.name)
-
-          return [analyser.name, config]
-        })
-    });
-
-    return Promise.all(configs)
-      .then(_.object)
-   }
 }
-
-
 
 function loadConfig(repo, analyser) {
   if(!analyser.configurable) {
