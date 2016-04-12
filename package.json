@@ -43,6 +43,7 @@
     "flow-bin": "^0.22.1",
     "mocha": "^2.4.5",
     "pprint": "0.0.1",
+    "sidekick": "^1.7.2",
     "sidekick-jshint": "^1.0.1",
     "sinon": "^1.17.3"
   }
