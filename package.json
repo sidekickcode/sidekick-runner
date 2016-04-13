@@ -1,6 +1,6 @@
 {
   "name": "@sidekick/runner",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Analyses source code for quality issues, using git to analyse only what's changed",
   "main": "sidekick-runner.js",
   "scripts": {
