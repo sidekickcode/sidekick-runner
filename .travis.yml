@@ -11,4 +11,5 @@ script:
   - sidekick run --ci
 
 notifications:
+  email: false
   slack: we-are-sidekick:GeIT5wtuKMLImpFXYHWzIGzI
