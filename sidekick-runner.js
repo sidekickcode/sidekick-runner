@@ -38,7 +38,6 @@ exports.create = function(setup/*: RunnerConfig */) /*: Promise<Analysis> */ {
 }
 
 function createAnalysisSetup(setup/*: RunnerConfig */) /*: Promise<AnalysisSetup> */ {
-
   const events = setup.events || new EventEmitter;
 
   // state is mutated as we find out more about the situation,
@@ -84,7 +83,8 @@ function createRepoConfig(state) {
 }
 
 function createAnalysers(state, events) {
-  log("%j", state)
+  log("%j", state);
+  log('asdasd');
   const ensuring = configure.ensureAnalysers({
     analysers: state.repoConfig.allAnalysers(),
     repo: state.repo,

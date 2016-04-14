@@ -12,7 +12,7 @@ const debug = require("../lib/debug").get("configure");
 exports.ensureAnalysers = ensureAnalysers;
 
 function ensureAnalysers(opts/*: { analysers: Array<Analyser>, repo: Repo, shouldInstall: Boolean } */) /*: Promise<Array<RunnableAnalyser>> */ {
-  
+
   const manager = new SAM(opts.analyserSource);
   
   manager.promise = manager.init()

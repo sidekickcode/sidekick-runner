@@ -23,8 +23,8 @@
   },
   "homepage": "https://github.com/sidekickcode/sidekick-runner#readme",
   "dependencies": {
-    "@sidekick/analyser-manager": "2.0.8",
-    "@sidekick/common": "3.3.0",
+    "@sidekick/analyser-manager": "2.0.9",
+    "@sidekick/common": "3.3.1",
     "@sidekick/git-helpers": "^1.0.1",
     "async-q": "^0.3.1",
     "bluebird": "2.9.34",
@@ -44,7 +44,7 @@
     "flow-bin": "^0.22.1",
     "mocha": "^2.4.5",
     "pprint": "0.0.1",
-    "sidekick": "^1.7.2",
+    "sidekick": "1.7.3",
     "sidekick-jshint": "^1.0.1",
     "sinon": "^1.17.3"
   }
