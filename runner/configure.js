@@ -28,7 +28,7 @@ function ensureAnalysers(opts/*: { analysers: Array<Analyser>, repo: Repo, shoul
 
   function installAndLoadConfigForAnalyser(analyser) {
     const installed = analyser.local ? {}
-                                     : manager.installAnalyser(analyser.name, analyser.version);
+                                     : manager.installAnalyser(analyser);
 
     return Promise.resolve(installed)
       .then((found/*: { path: string, config: object } */) => {
