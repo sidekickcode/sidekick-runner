@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/sidekickcode/sidekick-runner#readme",
   "dependencies": {
-    "@sidekick/analyser-manager": "2.0.6",
+    "@sidekick/analyser-manager": "2.0.7",
     "@sidekick/common": "3.3.0",
     "@sidekick/git-helpers": "^1.0.1",
     "async-q": "^0.3.1",
