@@ -24,17 +24,18 @@
   "homepage": "https://github.com/sidekickcode/sidekick-runner#readme",
   "dependencies": {
     "@sidekick/analyser-manager": "2.0.6",
-    "@sidekick/common": "^3.2.0",
+    "@sidekick/common": "3.3.0",
     "@sidekick/git-helpers": "^1.0.1",
     "async-q": "^0.3.1",
-    "bluebird": "^3.3.4",
+    "bluebird": "2.9.34",
     "child-process-promise": "^1.1.0",
     "concat-stream": "^1.5.1",
     "debug": "^2.2.0",
     "getenv": "^0.6.0",
     "lodash": "^3.10.1",
     "proxytron": "^1.0.5",
-    "strip-json-comments": "^2.0.1"
+    "strip-json-comments": "^2.0.1",
+    "uuid": "^2.0.2"
   },
   "devDependencies": {
     "@sidekick/analyser-common": "^1.0.0",
