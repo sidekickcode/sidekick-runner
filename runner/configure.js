@@ -20,6 +20,7 @@ function ensureAnalysers(opts/*: { analysers: Array<Analyser>, repo: Repo, shoul
       return manager.validateAnalyserList(opts.analysers)
         .then(function(validAnalysers){
           debug('valid analysers: ' + JSON.stringify(validAnalysers));
+          //todo - only install missing analysers from repoConfig
           return Promise.all(_.map(validAnalysers, installAndLoadConfigForAnalyser))
         });
     });
@@ -32,7 +33,7 @@ function ensureAnalysers(opts/*: { analysers: Array<Analyser>, repo: Repo, shoul
 
     return Promise.resolve(installed)
       .then((found/*: { path: string, config: object } */) => {
-        return _.defaults({ path: found.path }, analyser, found.config) 
+        return _.defaults({ path: found.path }, analyser, found.config)
       })
       .then(function(configured) {
         return loadConfig(opts.repo, configured)

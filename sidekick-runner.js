@@ -16,6 +16,8 @@ const log = require("./lib/debug").get("runner");
 const configure = require("./runner/configure");
 
 const repoConfig = require("@sidekick/common/repoConfig");
+const os = require("@sidekick/common/os");
+
 const proxy = require("proxytron");
 
 /*:: import type { RunnerConfig, AnalysisSetup } from "./types" */
@@ -84,13 +86,12 @@ function createRepoConfig(state) {
 
 function createAnalysers(state, events) {
   log("%j", state);
-  log('asdasd');
+  const INSTALL_LOCATION = path.join(os.userDataPath(), '/installed_analysers');
   const ensuring = configure.ensureAnalysers({
     analysers: state.repoConfig.allAnalysers(),
     repo: state.repo,
     shouldInstall: state.shouldInstall,
-    // install into a subdir of this module's location
-    analyserSource: path.join(__dirname, '/installed-analysers'),
+    analyserSource: INSTALL_LOCATION,
   });
 
   proxy({

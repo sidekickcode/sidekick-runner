@@ -4,7 +4,6 @@ var Promise = require("bluebird");
 var concatStream = require("concat-stream");
 var spawn = require("child_process").spawn;
 var _ = require("lodash");
-var jsonWithComments = _.compose(JSON.parse, require("strip-json-comments"));
 var fs = Promise.promisifyAll(require("fs"));
 var path = require("path");
 
@@ -24,6 +23,7 @@ var log = require("../lib/debug").get("file-analyser");
 
 exports.MAX_TIME_SECONDS = 60;
 
+
 // run analyser to completion
 exports.run = function(analyser, path, file) {
   var env = {};
@@ -40,7 +40,10 @@ exports.start = function(analyser, opts) {
   opts.env = opts.env || {};
 
   var command = analyser.command.split(" ");
-  var child = spawn(_.first(command), _.rest(command), {
+  var args = analyser.command.substr(analyser.command.indexOf(" ") + 1);  //handle analyser paths with spaces
+
+  //N.B. spawn does not need string args whitespace escaped
+  var child = spawn(_.first(command), [args], {
     env: _.defaults(opts.env, process.env),
     cwd: analyser.path,
   });
@@ -71,6 +74,7 @@ exports.start = function(analyser, opts) {
   }
 
   function cleanup(v) {
+    log('cleanup');
     clearTimeout(timeout);
   }
 
@@ -88,6 +92,7 @@ exports.start = function(analyser, opts) {
       }, exports.MAX_TIME_SECONDS * 1000);
 
       function exitHandler(code, signal) {
+        log('have exit');
         // no code means signal
         if(code == null) {
           reject(new AnalysisFailed(ERRORS.TERMINATED_BY_SIGNAL, { signal: signal }));
@@ -104,6 +109,7 @@ exports.start = function(analyser, opts) {
       }
 
       function errorHandler(err) {
+        log('have error');
         switch(err.code) {
         case "ENOENT":
           log("failed to run analyser due to missing file", err.stack);
