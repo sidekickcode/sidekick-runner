@@ -42,6 +42,18 @@ exports.start = function(analyser, opts) {
   var command = analyser.command.split(" ");
   var args = analyser.command.substr(analyser.command.indexOf(" ") + 1);  //handle analyser paths with spaces
 
+  //FIXME: why is path on Windows slash prefixed?
+  function pathHack(path){
+    if(path.indexOf('\\C:') !== -1){
+      return path.substr(1);
+    } else {
+      return path;
+    }
+  }
+  args = pathHack(args);
+  log('command: ' + _.first(command));
+  log('args: ' + args);
+
   //N.B. spawn does not need string args whitespace escaped
   var child = spawn(_.first(command), [args], {
     env: _.defaults(opts.env, process.env),
