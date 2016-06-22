@@ -8,7 +8,11 @@ const git = require("@sidekick/git-helpers");
 const _ = require("lodash");
 const log = require("debug")("git-plan");
 const repoConfig = require("@sidekick/common/repoConfig");
-const Promise = require("bluebird");
+const userSettings = require("@sidekick/common/userSettings");
+
+userSettings.load();
+log('setting gitBin to : ' + userSettings.getGitBin());
+git.setGitBin(userSettings.getGitBin());
 
 /*:: import type { PlanSource, Plan } from "../types" */
 
