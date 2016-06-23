@@ -24,7 +24,7 @@
   "homepage": "https://github.com/sidekickcode/sidekick-runner#readme",
   "dependencies": {
     "@sidekick/analyser-manager": "2.2.5",
-    "@sidekick/common": "3.3.2",
+    "@sidekick/common": "3.3.3",
     "@sidekick/git-helpers": "^1.0.1",
     "async-q": "^0.3.1",
     "bluebird": "2.9.34",

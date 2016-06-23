@@ -80,7 +80,14 @@ function createPlan(state) {
   return planner.forTarget(state);
 }
 
-function createRepoConfig(state) {
+function createRepoConfig(state, events) {
+  proxy({
+    from: repoConfig.events,
+    to: events,
+    events: {
+      message: null,
+    }
+  });
   return repoConfig.load(state.target.path)
 }
 
