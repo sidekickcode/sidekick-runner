@@ -8,6 +8,7 @@ script:
   - git config user.email "test@example.com"
   - git config --global user.name "Test User"
   - npm test
+  - npm i sidekick
   - sidekick -v
   - sidekick run --ci
 
