@@ -60,7 +60,7 @@ exports.plan = function plan(opts/*:  PlanSource */) /*: Promise<Plan> */ {
     if(isFullScanAnalysis()) {
       return git.allFiles(repoPath);
     } else {
-      return git.filesWithModificationsAsync(repoPath, beforeSha)
+      return git.filesWithModificationsAsync(repoPath, { before: beforeSha, after: afterSha })
     }
   }
 
